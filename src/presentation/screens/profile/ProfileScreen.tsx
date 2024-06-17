@@ -8,7 +8,7 @@ import { User } from '../../../domain/entities/user';
 import { gestEduApi } from '../../../config/api/GestEduApi';
 
 
-const defaultAvatar = require('../../../assets/logo/defaultUserImage.png'); // Ruta de la imagen predeterminada
+const defaultAvatar = require('../../../assets/logo/defaultUserImage.png');
 
 export const ProfileScreen = () => {
   const theme = useTheme();

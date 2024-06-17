@@ -2,7 +2,7 @@ export interface GuideStep {
     id: string;
     title: string;
     description: string;
-    //image: any; // Puedes ajustar el tipo según tu manejo de imágenes
+    //image: any;
   }
   
   export interface Guide {

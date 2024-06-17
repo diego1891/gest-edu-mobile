@@ -1,16 +1,25 @@
 import {useNavigation} from '@react-navigation/native';
 import {Text, Layout, Button, Icon} from '@ui-kitten/components';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {useAuthStore} from '../../store/auth/useAuthStore';
 import {Alert, Image, StyleSheet, View} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParams} from '../../navigation/StackNavigator';
+
+
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParams, 'HomeScreen'>;
 
 export const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const {logout} = useAuthStore();
+  const[token, setToken] = useState("")
+  const[sentToken, setSentToken] = useState(false)
+
+
+  
+
+
 
   const onLogout = async () => {
     const resp = await logout();
@@ -39,6 +48,10 @@ export const HomeScreen = () => {
     </Layout>
   );
 };
+
+
+     
+    
 
 const styles = StyleSheet.create({
   container: {

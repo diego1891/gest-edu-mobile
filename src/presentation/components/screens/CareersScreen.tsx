@@ -104,11 +104,17 @@ const CareersScreen: React.FC<CareersListScreenProps> = ({
         <View style={styles.header}>
           <Text style={styles.headerText}>{headerText}</Text>
         </View>
-        <FlatList
-          data={careers}
-          renderItem={renderCareerItem}
-          keyExtractor={item => item.id.toString()}
-        />
+        {careers.length === 0 ? (
+          <View style={styles.noDataContainer}>
+            <Text style={styles.noDataText}>No hay carreras disponibles para realizar la acción</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={careers}
+            renderItem={renderCareerItem}
+            keyExtractor={item => item.id.toString()}
+          />
+        )}
       </Layout>
     </>
   );
@@ -212,6 +218,15 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     flex: 0.5,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noDataText: {
+    fontSize: 18,
+    color: '#fff',
   },
 });
 

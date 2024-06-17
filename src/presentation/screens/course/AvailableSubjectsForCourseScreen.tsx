@@ -4,39 +4,55 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import SubjectsListScreen from '../../components/screens/SubjectsListScreen';
 import { Subject } from '../../../domain/entities/subjectsResponse';
+import { gestEduApi } from '../../../config/api/GestEduApi';
+import { CourseResponse } from '../../../domain/entities/courseResponse';
 
-type AvailableSubjectsForExamScreenNavigationProp = StackNavigationProp<
+type AvailableSubjectsForCourseScreenNavigationProp = StackNavigationProp<
   RootStackParams,
-  'ExamsScreen'
+  'SubjectCourseScreen'
 >;
-type AvailableSubjectsForExamScreenRouteProp = RouteProp<
+type AvailableSubjectsForCourseScreenRouteProp = RouteProp<
   RootStackParams,
-  'AvailableSubjectsForExamScreen'
+  'AvailableSubjectsForCourseScreen'
 >;
 
-export const AvailableSubjectsForExamScreen = () => {
-  const navigation = useNavigation<AvailableSubjectsForExamScreenNavigationProp>();
-  const route = useRoute<AvailableSubjectsForExamScreenRouteProp>();
+export const AvailableSubjectsForCourseScreen = () => {
+  const navigation = useNavigation<AvailableSubjectsForCourseScreenNavigationProp>();
+  const route = useRoute<AvailableSubjectsForCourseScreenRouteProp>();
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
+  const [subjectId, setSubjectId] = useState<number | null>(null);
 
   useEffect(() => {
     if (route.params?.career?.id) {
       setSelectedCareerId(route.params.career.id);
+      //fetchSubjects();
     }
+
   }, [route.params]);
 
-  const handlePressItem = (item: Subject) => {
-    //navigation.navigate('ExamsScreen',  { subject: item });
-  };
-
+  
   const endpoint = selectedCareerId
-    ? `/estudiantes/${selectedCareerId}/asignaturas-a-examen`
+    ? `/estudiantes/${selectedCareerId}/asignaturas-pendientes`
     : '';
+
+
+ /* const fetchSubjects = async () => {
+    try {
+      const response = await gestEduApi.get<CourseResponse>(`/estudiantes/${selectedCareerId}/cursos-activos`);
+      setSubjectId(response.data.asignaturaId);
+    } catch (error) {
+      console.error('Error fetching subjects:', error);
+    }
+  };
+*/
+  const handlePressItem = (item: Subject) => {
+    navigation.navigate('SubjectCourseScreen',  { subject: item });
+  };
 
   return (
     <SubjectsListScreen
       endpoint={endpoint}
-      headerText="Asignaturas Disponibles para Examen"
+      headerText="Asignaturas con cursos disponibles"
       iconName="file-text-outline"
       onPress={handlePressItem}
     />

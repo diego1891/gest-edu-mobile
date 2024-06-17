@@ -4,22 +4,22 @@ import {useNavigation} from '@react-navigation/native';
 import {Content} from '../../../domain/entities/careersListResponse';
 import CareersScreen from '../../components/screens/CareersScreen';
 
-type EnrolledCareersForCourseScreenNavigationProp = StackNavigationProp<
+type EnrolledCareersScreenNavigationProp = StackNavigationProp<
   RootStackParams,
-  'AvailableSubjectsForCourseScreen'
+  'Certificate'
 >;
 
-const EnrolledCareersForCourseScreen = () => {
-  const navigation = useNavigation<EnrolledCareersForCourseScreenNavigationProp>();
+const EnrolledCareersForCertificateScreen = () => {
+  const navigation = useNavigation<EnrolledCareersScreenNavigationProp>();
 
   const handlePressItem = (item: Content) => {
-    navigation.navigate('AvailableSubjectsForCourseScreen', {career: item});
+    navigation.navigate('Certificate', {career: item});
   };
 
   return (
     <CareersScreen
       endpoint="estudiantes/carreras-inscripto"
-      headerText="Carreras Activas"
+      headerText="Carreras Inscritas"
       iconName="file-text-outline"
       onPress={handlePressItem}
       showHeader={false}
@@ -27,4 +27,4 @@ const EnrolledCareersForCourseScreen = () => {
   );
 };
 
-export default EnrolledCareersForCourseScreen;
+export default EnrolledCareersForCertificateScreen;
