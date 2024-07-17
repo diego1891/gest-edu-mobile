@@ -15,19 +15,36 @@ import {
 } from '../../../domain/entities/examResponse';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
+import CustomAlert from '../../components/cards/CustomAlert';
 
 const EnrolledExamsScreen = () => {
   const [exams, setExams] = useState<ExamContent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation();
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
+  });
 
-  const handleLogoPress = () => {
+  const handleLogoPress = () => { 
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'SideMenuNavigator' }],
+      })
+    );
+  }
+
+  const handleOnClose = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
         routes: [{name: 'SideMenuNavigator'}],
       }),
     );
+    setIsAlertVisible(false);
   };
 
   const handleUnsubscribe = async (id: number) => {
@@ -35,28 +52,30 @@ const EnrolledExamsScreen = () => {
       const url = `/examenes/${id}/baja`;      
       const response = await gestEduApi.delete(url);
      
-      Alert.alert(
-        'Desinscripción exitosa',
-        'Se ha desinscrito correctamente del examen',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              handleLogoPress();
-            },
-          },
-        ],
-      );
+      setAlertData({
+        title: 'Desinscripción exitosa',
+        message: 'Se ha desinscrito correctamente del examen',
+        icon: 'checkmark-outline',
+      });
+      setIsAlertVisible(true);
+      handleOnClose()
+
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data.message || 'No se pudo desinscribir del examen';
-        Alert.alert('Error', errorMessage, [
-          { text: 'OK' },
-        ]);
+        setAlertData({
+          title: 'Error',
+          message: errorMessage,
+          icon: 'alert-triangle-outline',
+        });
+        setIsAlertVisible(true);
       } else {
-        Alert.alert('Error', 'No se pudo desinscribir del examen', [
-          { text: 'OK' },
-        ]);
+        setAlertData({
+          title: 'Error',
+          message: 'No se pudo desinscribir del examen',
+          icon: 'alert-triangle-outline',
+        });
+        setIsAlertVisible(true);
       }
     }
   };
@@ -150,6 +169,13 @@ const EnrolledExamsScreen = () => {
             keyExtractor={item => item.id.toString()}
           />
         )}
+        <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleOnClose }
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
+      />
       </Layout>
     </>
   );

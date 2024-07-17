@@ -1,13 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { Text, Layout, Spinner, Icon } from '@ui-kitten/components';
-import { gestEduApi } from '../../../config/api/GestEduApi';
-import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackParams } from '../../navigation/StackNavigator';
-import { CourseResponse } from '../../../domain/entities/CourseResponse';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import {Text, Layout, Spinner, Icon} from '@ui-kitten/components';
+import {gestEduApi} from '../../../config/api/GestEduApi';
+import {
+  CommonActions,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import {RootStackParams} from '../../navigation/StackNavigator';
+import {CourseResponse} from '../../../domain/entities/CourseResponse';
 import axios from 'axios';
+import CustomAlert from '../../components/cards/CustomAlert';
 
-type SubjectCourseScreenRouteProp = RouteProp<RootStackParams, 'SubjectCourseScreen'>;
+type SubjectCourseScreenRouteProp = RouteProp<
+  RootStackParams,
+  'SubjectCourseScreen'
+>;
 
 const SubjectCourseScreen = () => {
   const route = useRoute<SubjectCourseScreenRouteProp>();
@@ -15,67 +30,74 @@ const SubjectCourseScreen = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedSubjectId, setSelectedSubjectId] = useState();
   const navigation = useNavigation();
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
+  });
 
-  const handleLogoPress = () => {
+  const handleOnClose = () => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
         routes: [{name: 'SideMenuNavigator'}],
       }),
     );
+    setIsAlertVisible(false);
   };
-
 
   const handleInscription = async (id: number) => {
     try {
       const inscripcionCursoDto = {
         cursoId: id,
       };
-      console.log("Curso" + inscripcionCursoDto);
-      
+      console.log('Curso' + inscripcionCursoDto);
 
       const response = await gestEduApi.post(
         `/inscripcionCurso`,
         inscripcionCursoDto,
       );
-
-      Alert.alert(
-        'Inscripción exitosa',
-        'Se ha inscripto correctamente al curso',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              handleLogoPress();
-            },
-          },
-        ],
-      );
+      console.log('Inscripción exitosa');
+      setAlertData({
+        title: 'Inscripción exitosa',
+        message: 'Se ha inscripto correctamente al curso',
+        icon: 'checkmark-outline',
+      });
+      setIsAlertVisible(true);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.message || 'No se pudo inscribir al curso';
-        Alert.alert('Error', errorMessage, [
-          { text: 'OK', onPress: () => { handleLogoPress(); }, }
-        ]);
+        const errorMessage =
+          error.response.data.message || 'No se pudo inscribir al curso';
+        setAlertData({
+          title: 'Error',
+          message: errorMessage,
+          icon: 'alert-triangle-outline',
+        });
+        setIsAlertVisible(true);
       } else {
-        Alert.alert('Error', 'No se pudo inscribir al curso', [
-          { text: 'OK' },
-        ]);
+        setAlertData({
+          title: 'Error',
+          message: 'No se pudo inscribir al curso',
+          icon: 'alert-triangle-outline',
+        });
+        setIsAlertVisible(true);
       }
     }
   };
 
   useEffect(() => {
-    console.log("ROUTE PARAM: " + route.params.subject.id);
-    
+    console.log('ROUTE PARAM: ' + route.params.subject.id);
+
     const fetchCourses = async () => {
       try {
         const response = await gestEduApi.get<CourseResponse[]>(
           `/asignaturas/${route.params.subject.id}/listado-cursos-disponibles`,
         );
-        console.log(`/asignaturas/${route.params.subject.id}/listado-cursos-disponibles`);
-        
-        
+        console.log(
+          `/asignaturas/${route.params.subject.id}/listado-cursos-disponibles`,
+        );
+
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -87,20 +109,26 @@ const SubjectCourseScreen = () => {
     fetchCourses();
   }, [route.params.subject.id]);
 
-  const renderCourseItem = ({ item }: { item: CourseResponse }) => (
+  const renderCourseItem = ({item}: {item: CourseResponse}) => (
     <View style={styles.courseItem}>
       <View style={styles.infoContainer}>
         <View style={styles.row}>
           <Icon name="calendar-outline" style={styles.icon} fill="#802C2C" />
-          <Text style={styles.value}>Inicio: {new Date(item.fechaInicio).toLocaleDateString()}</Text>
+          <Text style={styles.value}>
+            Inicio: {new Date(item.fechaInicio).toLocaleDateString()}
+          </Text>
         </View>
         <View style={styles.row}>
           <Icon name="calendar-outline" style={styles.icon} fill="#802C2C" />
-          <Text style={styles.value}>Fin: {new Date(item.fechaFin).toLocaleDateString()}</Text>
+          <Text style={styles.value}>
+            Fin: {new Date(item.fechaFin).toLocaleDateString()}
+          </Text>
         </View>
         <View style={styles.row}>
           <Icon name="clock-outline" style={styles.icon} fill="#802C2C" />
-          <Text style={styles.value}>Días previos de inscripción: {item.diasPrevInsc}</Text>
+          <Text style={styles.value}>
+            Días previos de inscripción: {item.diasPrevInsc}
+          </Text>
         </View>
         <View style={styles.row}>
           <Icon name="info-outline" style={styles.icon} fill="#802C2C" />
@@ -134,6 +162,13 @@ const SubjectCourseScreen = () => {
         data={courses}
         renderItem={renderCourseItem}
         keyExtractor={item => item.id.toString()}
+      />
+      <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleOnClose}
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
       />
     </Layout>
   );

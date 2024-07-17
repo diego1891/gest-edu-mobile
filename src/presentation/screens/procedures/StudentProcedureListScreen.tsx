@@ -14,6 +14,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParams} from '../../navigation/StackNavigator';
 import {Tramite} from '../../../domain/entities/procedureResponse';
 import { MyIcon } from '../../components/ui/MyIcon';
+import CustomAlert from '../../components/cards/CustomAlert';
 
 type StudentProcedureListScreenNavigationProp = StackNavigationProp<
   RootStackParams,
@@ -26,6 +27,12 @@ const StudentProcedureListScreen = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation<StudentProcedureListScreenNavigationProp>();
   const nav = useNavigation();
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
+  });
 
   const handleLogoPress = () => {
     nav.dispatch(
@@ -36,6 +43,19 @@ const StudentProcedureListScreen = () => {
     );
   };
 
+  const handleOnClose = () => { 
+    
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'SideMenuNavigator' }],
+      })
+    );
+    setIsAlertVisible(false);
+
+   };
+
+
   useEffect(() => {
     const fetchTramites = async () => {
       try {
@@ -43,7 +63,12 @@ const StudentProcedureListScreen = () => {
         setTramites(response.data);
       } catch (error) {
         console.error('Error fetching tramites:', error);
-        Alert.alert('Error', 'Ocurrió un error al obtener los trámites.');
+        setAlertData({
+          title: 'Error',
+          message: 'Ocurrió un error al obtener los trámites.',
+          icon: "alert-triangle-outline" ,
+        });
+        setIsAlertVisible(true);
       } finally {
         setLoading(false);
       }
@@ -110,6 +135,13 @@ const StudentProcedureListScreen = () => {
           renderItem={renderTramiteItem}
           keyExtractor={item => item.id.toString()}
         />
+        <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleOnClose }
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
+      />
       </Layout>
     </>
   );

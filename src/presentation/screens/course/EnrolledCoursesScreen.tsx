@@ -2,13 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Text, Layout, Icon, Spinner } from '@ui-kitten/components';
 import { gestEduApi } from '../../../config/api/GestEduApi';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { CompleteCourseResponse } from '../../../domain/entities/completeCourseResponse';
+import CustomAlert from '../../components/cards/CustomAlert';
 
 const EnrolledCoursesScreen = () => {
   const [courses, setCourses] = useState<CompleteCourseResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation();
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
+  });
+
+  const handleOnClose = () => { 
+    
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'SideMenuNavigator' }],
+      })
+    );
+    setIsAlertVisible(false);
+
+   };
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -17,10 +36,14 @@ const EnrolledCoursesScreen = () => {
           '/inscripcionCurso/cursos-inscripto',
         );
         setCourses(response.data);
-        console.log(courses[1]);
         
       } catch (error) {
-        Alert.alert('Error', error + ' Ocurrió un error al obtener los cursos.');
+        setAlertData({
+          title: 'Error',
+          message: 'Ocurrió un error al obtener los cursos.',
+          icon: "alert-triangle-outline" ,
+        });
+        setIsAlertVisible(true);
       } finally {
         setLoading(false);
       }
@@ -33,28 +56,32 @@ const EnrolledCoursesScreen = () => {
     try {
       const response = await gestEduApi.delete(`/inscripcionCurso/${id}/eliminar`);
       if (response.status === 200) {
-        Alert.alert('Baja exitosa', 'Se ha dado de baja del curso correctamente.');
+        setAlertData({
+          title: 'Baja exitosa',
+          message: 'Se ha dado de baja del curso correctamente.',
+          icon: "checkmark-outline" ,
+        });
+        setIsAlertVisible(true);
         setCourses(courses.filter(course => course.cursoId !== id));
       } else {
-        Alert.alert('Error', 'No se pudo dar de baja del curso.');
+        setAlertData({
+          title: 'Error',
+          message: 'No se pudo dar de baja del curso.',
+          icon: "alert-triangle-outline" ,
+        });
+        setIsAlertVisible(true);
       }
     } catch (error) {
       console.error('Error durante la baja:', error);
-      Alert.alert('Error', 'Ocurrió un error durante la baja.');
+      setAlertData({
+        title: 'Error',
+        message: 'Ocurrió un error durante la baja.',
+        icon: "alert-triangle-outline" ,
+      });
+      setIsAlertVisible(true);
     }
   };
 
-  const confirmUnsubscribe = (id: string) => {
-    Alert.alert(
-      'Confirmar baja',
-      '¿Está seguro que desea darse de baja del curso?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Sí', onPress: () => handleUnsubscribe(id) },
-      ],
-      { cancelable: false }
-    );
-  };
 
   const renderCourseItem = ({ item }: { item: CompleteCourseResponse }) => (
     <View style={styles.courseItem}>
@@ -103,7 +130,7 @@ const EnrolledCoursesScreen = () => {
       {item.estado !== 'FINALIZADO' && (
         <TouchableOpacity
           style={styles.iconContainer}
-          onPress={() => confirmUnsubscribe(item.cursoId)}>
+          onPress={() => handleUnsubscribe(item.cursoId)}>
           <Icon name="minus-circle-outline" style={styles.icon} fill="#802C2C" />
         </TouchableOpacity>
       )}
@@ -127,6 +154,13 @@ const EnrolledCoursesScreen = () => {
         data={courses}
         renderItem={renderCourseItem}
         keyExtractor={item => item.cursoId.toString()}
+      />
+      <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleOnClose }
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
       />
     </Layout>
   );

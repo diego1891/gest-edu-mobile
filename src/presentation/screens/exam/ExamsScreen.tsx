@@ -22,6 +22,7 @@ import {
 import {RootStackParams} from '../../navigation/StackNavigator';
 import {CreateInscripcionExamenDTO} from '../../../domain/entities/InscripcionExamenDto';
 import axios from 'axios';
+import CustomAlert from '../../components/cards/CustomAlert';
 
 type ExamsScreenRouteProp = RouteProp<RootStackParams, 'ExamsScreen'>;
 
@@ -30,6 +31,12 @@ const ExamsScreen = () => {
   const [exams, setExams] = useState<ExamContent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation();
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
+  });
 
   const handleLogoPress = () => {
     navigation.dispatch(
@@ -38,6 +45,16 @@ const ExamsScreen = () => {
         routes: [{name: 'SideMenuNavigator'}],
       }),
     );
+  };
+
+  const handleOnClose = () => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'SideMenuNavigator'}],
+      }),
+    );
+    setIsAlertVisible(false);
   };
 
   const handleInscription = async (id: number) => {
@@ -51,31 +68,31 @@ const ExamsScreen = () => {
         `/examenes/inscribirse`,
         inscripcionExamenDto,
       );
-
-      Alert.alert(
-        'Inscripción exitosa',
-        'Se ha inscripto correctamente al examen',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              handleLogoPress();
-            },
-          },
-        ],
-      );
+      setAlertData({
+        title: 'Inscripción exitosa',
+        message: 'Se ha inscripto correctamente al examen',
+        icon: 'checkmark-outline',
+      });
+      setIsAlertVisible(true);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data.message || 'No se pudo inscribir al examen'; //COMO AGARRAR MSJ DE ERROR DE LA API IMPORTANTE
-        Alert.alert('Error', errorMessage, [
-          { text: 'OK', onPress : () => { handleLogoPress(); },}
-        ]);
+        const errorMessage =
+          error.response.data.message || 'No se pudo inscribir al examen'; //COMO AGARRAR MSJ DE ERROR DE LA API IMPORTANTE
+        setAlertData({
+          title: 'Error',
+          message: errorMessage,
+          icon: 'alert-triangle-outline',
+        });
+        setIsAlertVisible(true);
       } else {
-        // Error general
-        Alert.alert('Error', 'No se pudo inscribir al examen', [
-          { text: 'OK' },
-        ]);
-      }    }
+        setAlertData({
+          title: 'Error',
+          message: 'No se pudo inscribir al examen',
+          icon: 'alert-triangle-outline',
+        });
+        setIsAlertVisible(true);
+      }
+    }
   };
 
   useEffect(() => {
@@ -161,6 +178,13 @@ const ExamsScreen = () => {
           renderItem={renderExamItem}
           keyExtractor={item => item.id.toString()}
         />
+        <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleOnClose }
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
+      />
       </Layout>
     </>
   );

@@ -7,6 +7,7 @@ import {RootStackParams} from '../../navigation/StackNavigator';
 import {useAuthStore} from '../../store/auth/useAuthStore';
 import {gestEduApi} from '../../../config/api/GestEduApi';
 import messaging from '@react-native-firebase/messaging';
+import CustomAlert from '../../components/cards/CustomAlert';
 
 interface Props extends StackScreenProps<RootStackParams, 'LoginScreen'> {}
 
@@ -16,6 +17,12 @@ export const LoginScreen = ({navigation}: Props) => {
   const [form, setForm] = useState({
     email: '',
     password: '',
+  });
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
   });
 
   function firebaseNotification() {
@@ -76,6 +83,12 @@ export const LoginScreen = ({navigation}: Props) => {
       if (notification) {
         const {title, body} = notification;
         Alert.alert(title!, body);
+        setAlertData({
+          title: title!,
+          message: body!,
+          icon: "bell-outline" ,
+        });
+        setIsAlertVisible(true);
       }
     });
 
@@ -97,7 +110,12 @@ export const LoginScreen = ({navigation}: Props) => {
       navigation.navigate('SideMenuNavigator');
     } else {
       setLoading(false);
-      Alert.alert('Error', 'Usuario o contraseña incorrectos', [{text: 'Ok'}]);
+      setAlertData({
+        title: 'Error',
+        message: 'Usuario o contraseña incorrectos',
+        icon: "alert-triangle-outline" ,
+      });
+      setIsAlertVisible(true);
     }
   };
 
@@ -114,13 +132,28 @@ export const LoginScreen = ({navigation}: Props) => {
     try {
       const response = await gestEduApi.get(`/validar/${validationCode}`);
       if (response.status === 200) {
-        Alert.alert('Validación exitosa', 'El certificado es válido.');
+        setAlertData({
+          title: 'Validación exitosa',
+          message: 'El certificado es válido.',
+          icon: "checkmark-circle-2-outline",
+        });
+        setIsAlertVisible(true);
       } else {
-        Alert.alert('Error', 'El certificado no es válido.');
+        setAlertData({
+          title: 'Error',
+          message: 'El certificado no es válido.',
+          icon: "alert-triangle-outline" ,
+        });
+        setIsAlertVisible(true);
       }
     } catch (error) {
       console.error('Error en la validación:', error);
-      Alert.alert('Error', 'Ocurrió un error durante la validación.');
+      setAlertData({
+        title: 'Error',
+        message: 'Ocurrió un error durante la validación.',
+        icon: "alert-triangle-outline",
+      });
+      setIsAlertVisible(true);
     } finally {
       setShowValidationInput(false);
     }
@@ -217,6 +250,14 @@ export const LoginScreen = ({navigation}: Props) => {
           </>
         )}
       </View>
+      <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={() => setIsAlertVisible(false) }
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
+
+      />
     </Layout>
   );
 };

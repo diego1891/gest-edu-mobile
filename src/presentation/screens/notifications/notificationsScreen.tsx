@@ -11,6 +11,7 @@ import { Text, Layout, Spinner, Icon } from '@ui-kitten/components';
 import { gestEduApi } from '../../../config/api/GestEduApi';
 import axios from 'axios';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import CustomAlert from '../../components/cards/CustomAlert';
 
 interface Notification {
   id: number;
@@ -24,6 +25,24 @@ const NotificationsScreen = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigation = useNavigation();
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
+  });
+
+  const handleOnClose = () => { 
+    
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'SideMenuNavigator' }],
+      })
+    );
+    setIsAlertVisible(false);
+
+   };
 
   const handleLogoPress = () => {
     navigation.dispatch(
@@ -53,11 +72,21 @@ const NotificationsScreen = () => {
   const markAsRead = async (id: number) => {
     try {
       await gestEduApi.post(`/notificaciones/${id}/leida`);
-      Alert.alert('Notificación marcada como leída');
+      setAlertData({
+        title: 'Notificación leída',
+        message: ' La notificación ha sido marcada como leída.',
+        icon: "bell-outline",
+      });
+      setIsAlertVisible(true);
       setNotifications(notifications.map(notif => notif.id === id ? { ...notif, leido: true } : notif));
     } catch (error) {
-      console.error('Error marking notification as read:', error);
-      Alert.alert('Error', 'Ocurrió un error al marcar la notificación como leída.');
+      setAlertData({
+        title: 'Error',
+        message: 'Ocurrió un error al marcar la notificación como leída.',
+        icon: "bell-off-outline",
+      });
+      setIsAlertVisible(true);
+      Alert.alert('Error', '');
     }
   };
 
@@ -107,6 +136,13 @@ const NotificationsScreen = () => {
           renderItem={renderNotificationItem}
           keyExtractor={item => item.id.toString()}
         />
+        <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleOnClose }
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
+      />
       </Layout>
     </>
   );

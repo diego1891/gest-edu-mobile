@@ -4,13 +4,13 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { Text, Layout, Button, Icon, Spinner } from '@ui-kitten/components';
-import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
+import { RouteProp, useRoute, useNavigation, CommonActions } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { gestEduApi } from '../../../config/api/GestEduApi';
+import CustomAlert from '../../components/cards/CustomAlert';
 
 type CareerDetailRouteProp = RouteProp<RootStackParams, 'CareerDetail'>;
 type CareerDetailNavigationProp = StackNavigationProp<
@@ -23,6 +23,24 @@ export const CareerDetailScreen = () => {
   const navigation = useNavigation<CareerDetailNavigationProp>();
   const { career } = route.params;
   const [loading, setLoading] = useState(false);
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [alertData, setAlertData] = useState({
+    title: '',
+    message: '',
+    icon: '',
+  });
+
+  const handleOnClose = () => { 
+    
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'SideMenuNavigator' }],
+      })
+    );
+    setIsAlertVisible(false);
+
+   };
 
   const handleInscription = async () => {
     setLoading(true);
@@ -34,19 +52,30 @@ export const CareerDetailScreen = () => {
         },
       });
       if (response.status === 200) {
-        Alert.alert('Inscripción exitosa');
+        setAlertData({
+          title: 'Solicitud exitosa',
+          message: 'Se ha enviado la solicitud de inscripción a la carrera.',
+          icon: "checkmark-circle-2-outline",
+        });
+        setIsAlertVisible(true);
       } else {
-        Alert.alert('Error', 'No se pudo completar la inscripción.');
+        setAlertData({
+          title: 'Error',
+          message: 'No se pudo completar la inscripción.',
+          icon: "alert-triangle-outline" ,
+        });
+        setIsAlertVisible(true);
       }
     } catch (error) {
       console.error('Error durante la inscripción:', error);
-      Alert.alert('Error', 'Ocurrió un error durante la inscripción.');
+      setAlertData({
+        title: 'Error',
+        message: 'Ocurrió un error durante la inscripción.',
+        icon: "alert-triangle-outline",
+      });
+      setIsAlertVisible(true);
     } finally {
       setLoading(false);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'SideMenuNavigator' }],
-      });
     }
   };
 
@@ -80,6 +109,14 @@ export const CareerDetailScreen = () => {
           </Button>
         )}
       </ScrollView>
+      <CustomAlert
+        isVisible={isAlertVisible}
+        onClose={handleOnClose }
+        title={alertData.title}
+        message={alertData.message}
+        iconName={alertData.icon}
+
+      />
     </Layout>
   );
 };
