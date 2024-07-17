@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    width: 500,
+    width: '80%',
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 7,
