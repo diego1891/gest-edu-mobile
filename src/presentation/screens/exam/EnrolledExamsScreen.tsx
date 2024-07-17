@@ -30,7 +30,7 @@ const EnrolledExamsScreen = () => {
     );
   };
 
-  const handleUnsubscribe = async ( id: number ) => {
+  const handleUnsubscribe = async (id: number) => {
     try {
       const url = `/examenes/${id}/baja`;      
       const response = await gestEduApi.delete(url);
@@ -139,11 +139,17 @@ const EnrolledExamsScreen = () => {
         <View style={styles.header}>
           <Text style={styles.headerText}>Exámenes Inscritos</Text>
         </View>
-        <FlatList
-          data={exams}
-          renderItem={renderExamItem}
-          keyExtractor={item => item.id.toString()}
-        />
+        {exams.length === 0 ? (
+          <View style={styles.noDataContainer}>
+            <Text style={styles.noDataText}>No hay exámenes en los que estés inscripto</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={exams}
+            renderItem={renderExamItem}
+            keyExtractor={item => item.id.toString()}
+          />
+        )}
       </Layout>
     </>
   );
@@ -236,6 +242,15 @@ const styles = StyleSheet.create({
   logo2: {
     width: 210,
     height: 40,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noDataText: {
+    fontSize: 18,
+    color: '#fff',
   },
 });
 

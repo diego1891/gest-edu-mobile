@@ -22,7 +22,7 @@ const EnrolledCareersForCertificateScreen = () => {
       headerText="Carreras Inscritas"
       iconName="file-text-outline"
       onPress={handlePressItem}
-      showHeader={false}
+      showHeader={true}
     />
   );
 };

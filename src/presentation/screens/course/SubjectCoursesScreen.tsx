@@ -29,9 +29,9 @@ const SubjectCourseScreen = () => {
   const handleInscription = async (id: number) => {
     try {
       const inscripcionCursoDto = {
-        cursoId: route.params.subject.id,
+        cursoId: id,
       };
-      console.log(inscripcionCursoDto);
+      console.log("Curso" + inscripcionCursoDto);
       
 
       const response = await gestEduApi.post(
@@ -71,8 +71,10 @@ const SubjectCourseScreen = () => {
     const fetchCourses = async () => {
       try {
         const response = await gestEduApi.get<CourseResponse[]>(
-          `/inscripcionCurso/${route.params.subject.id}/cursos-disponibles`,
+          `/asignaturas/${route.params.subject.id}/listado-cursos-disponibles`,
         );
+        console.log(`/asignaturas/${route.params.subject.id}/listado-cursos-disponibles`);
+        
         
         setCourses(response.data);
       } catch (error) {

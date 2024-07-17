@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Image, Alert } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import { Layout, Text, Button, Input, useTheme } from '@ui-kitten/components';
 import { MyIcon } from '../../components/ui/MyIcon';
 import { useNavigation } from '@react-navigation/native';
 import { StorageAdapter } from '../../../config/adapters/storage';
 import { User } from '../../../domain/entities/user';
 import { gestEduApi } from '../../../config/api/GestEduApi';
-
+import { launchImageLibrary } from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
 
 const defaultAvatar = require('../../../assets/logo/defaultUserImage.png');
 
@@ -22,7 +29,7 @@ export const ProfileScreen = () => {
     telefono: '',
     domicilio: '',
     fechaNac: new Date(),
-    avatarUrl: '',
+    imagen: defaultAvatar,  // Inicializar con el valor predeterminado
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -38,14 +45,13 @@ export const ProfileScreen = () => {
           setProfile({
             ...parsedProfile,
             fechaNac: new Date(parsedProfile.fechaNac),
-            avatarUrl: parsedProfile.avatarUrl || defaultAvatar
+            imagen: parsedProfile.imagen || defaultAvatar  // Usar el valor predeterminado si no hay URL de imagen
           });
         } else {
           const response = await gestEduApi.get('/usuario/perfil');
           const fetchedProfile: User = response.data;
-
           fetchedProfile.fechaNac = new Date(fetchedProfile.fechaNac);
-          fetchedProfile.avatarUrl = fetchedProfile.avatarUrl || defaultAvatar;
+          fetchedProfile.imagen = fetchedProfile.imagen || defaultAvatar;  // Usar el valor predeterminado si no hay URL de imagen
 
           setProfile(fetchedProfile);
           await StorageAdapter.setItem('profile', JSON.stringify(fetchedProfile));
@@ -71,7 +77,6 @@ export const ProfileScreen = () => {
 
   const handleApplyChanges = async () => {
     try {
-
       const updatedTempProfile = {
         ...tempProfile,
         fechaNac: tempProfile.fechaNac instanceof Date ? tempProfile.fechaNac.toISOString() : tempProfile.fechaNac
@@ -80,9 +85,8 @@ export const ProfileScreen = () => {
       const response = await gestEduApi.put('/usuario/perfil', updatedTempProfile);
       const updatedProfile: User = response.data;
 
-     
       updatedProfile.fechaNac = new Date(updatedProfile.fechaNac);
-      updatedProfile.avatarUrl = updatedProfile.avatarUrl || defaultAvatar;
+      updatedProfile.imagen = updatedProfile.imagen;
 
       setProfile(updatedProfile);
       await StorageAdapter.setItem('profile', JSON.stringify(updatedProfile));
@@ -93,14 +97,53 @@ export const ProfileScreen = () => {
     }
   };
 
+  const handleImagePick = () => {
+    launchImageLibrary({ mediaType: 'photo' }, async (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorMessage) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else {
+        if (response.assets) {
+          const asset = response.assets[0];
+          if (asset.uri) {
+            uploadImageToFirebase(asset.uri);
+          }
+        }
+      }
+    });
+  };
+
+  const uploadImageToFirebase = async (uri: string) => {
+    const filename = profile.ci;
+    const storageRef = storage().ref(filename);
+    const task = storageRef.putFile(uri);
+
+    task.on('state_changed', snapshot => {
+      console.log(snapshot);
+    });
+
+    try {
+      await task;
+      const url = await storageRef.getDownloadURL();
+      setTempProfile({ ...tempProfile, imagen: url });
+      Alert.alert('Éxito', 'Imagen subida correctamente.');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      Alert.alert('Error', 'Error subiendo la imagen.');
+    }
+  };
+
   return (
     <Layout style={styles.outerContainer}>
       <Layout style={styles.container}>
         <View style={styles.profileHeader}>
-          <Image 
-            source={typeof profile.avatarUrl === 'string' ? { uri: profile.avatarUrl } : profile.avatarUrl} 
-            style={styles.avatar} 
-          />
+          <TouchableOpacity onPress={handleImagePick}>
+            <Image 
+              source={typeof profile.imagen === 'string' ? { uri: profile.imagen } : profile.imagen} 
+              style={styles.avatar} 
+            />
+          </TouchableOpacity>
           <Text style={styles.name}>{profile.nombre} {profile.apellido}</Text>
         </View>
 
@@ -189,7 +232,6 @@ export const ProfileScreen = () => {
     </Layout>
   );
 };
-
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,

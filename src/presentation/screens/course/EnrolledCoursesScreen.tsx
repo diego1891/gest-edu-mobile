@@ -17,6 +17,8 @@ const EnrolledCoursesScreen = () => {
           '/inscripcionCurso/cursos-inscripto',
         );
         setCourses(response.data);
+        console.log(courses[1]);
+        
       } catch (error) {
         Alert.alert('Error', error + ' Ocurrió un error al obtener los cursos.');
       } finally {
@@ -87,7 +89,7 @@ const EnrolledCoursesScreen = () => {
           <Text style={styles.label}>Horarios:</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {item.horarios.length === 0 ? (
-              <Text style={styles.value}>No hay horarios ingresados</Text>
+              <Text style={styles.value}> No hay horarios ingresados</Text>
             ) : (
               item.horarios.map((horario, index) => (
                 <Text key={index} style={styles.horarioText}>

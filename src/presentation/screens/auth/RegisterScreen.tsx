@@ -24,7 +24,7 @@ export const RegisterScreen = ({navigation}: Props) => {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
-  const [fechaNac, setFechaNac] = useState(new Date());
+  const [Nac, setNac] = useState(new Date());
   const [domicilio, setDomicilio] = useState('');
   const [telefono, setTelefono] = useState('');
   const [password, setPassword] = useState('');
@@ -32,8 +32,19 @@ export const RegisterScreen = ({navigation}: Props) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  const formatDate = (date: Date ) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const handleRegister = async () => {
+
+    const fechaNac = formatDate(Nac);
+  
+
     const user = {
       ci,
       nombre,
@@ -108,8 +119,8 @@ export const RegisterScreen = ({navigation}: Props) => {
           <Datepicker
             style={styles.input}
             placeholder="Fecha de nacimiento"
-            date={fechaNac}
-            onSelect={setFechaNac}
+            date={Nac}
+            onSelect={setNac}
             min={new Date(1900, 0, 1)} // Permitir seleccionar fechas desde el 1 de enero de 1900
             max={new Date()} // Permitir seleccionar fechas hasta la fecha actual
             accessoryLeft={props => (

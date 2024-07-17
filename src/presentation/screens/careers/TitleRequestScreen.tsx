@@ -30,7 +30,7 @@ const TitleRequestScreen = () => {
         },
       });
       if (response.status === 200) {
-        Alert.alert('Inscripción exitosa');
+        Alert.alert('Solicitud exitosa');
       } else {
         Alert.alert('Error', 'No se pudo completar la inscripción.');
       }
@@ -56,7 +56,7 @@ const TitleRequestScreen = () => {
       headerText="Carreras Inscritas"
       iconName="award-outline"
       onPress={handlePressItem}
-      showHeader={false}
+      showHeader={true}
     />
   );
 };

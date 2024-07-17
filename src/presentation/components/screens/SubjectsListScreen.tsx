@@ -12,14 +12,13 @@ import {
   SubjectsResponse,
   Subject,
 } from '../../../domain/entities/subjectsResponse';
-import CustomHeader from '../../navigation/CustomHeader';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import {MyIcon} from '../ui/MyIcon';
 
 interface SubjectsListScreenProps {
   endpoint: string;
   headerText: string;
-  iconName: string;
+  iconName?: string;
   onPress: (item: Subject) => void;
 }
 
@@ -106,11 +105,17 @@ const SubjectsListScreen: React.FC<SubjectsListScreenProps> = ({
         <View style={styles.header}>
           <Text style={styles.headerText}>{headerText}</Text>
         </View>
-        <FlatList
-          data={subjects}
-          renderItem={renderSubjectItem}
-          keyExtractor={item => item.id.toString()}
-        />
+        {subjects.length === 0 ? (
+          <View style={styles.noDataContainer}>
+            <Text style={styles.noDataText}>No hay datos disponibles</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={subjects}
+            renderItem={renderSubjectItem}
+            keyExtractor={item => item.id.toString()}
+          />
+        )}
       </Layout>
     </>
   );
@@ -188,6 +193,15 @@ const styles = StyleSheet.create({
   logo2: {
     width: 210,
     height: 40,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noDataText: {
+    fontSize: 18,
+    color: '#fff',
   },
 });
 

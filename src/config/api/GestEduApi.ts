@@ -1,11 +1,10 @@
 import axios from 'axios';
-import {API_URL} from '@env';
+import {URL_API} from '@env';
 import {StorageAdapter} from '../adapters/storage';
 
-console.log('API_URL:', API_URL);
 
 const gestEduApi = axios.create({
-  baseURL: API_URL,
+  baseURL: URL_API,
   headers: {
     'Content-Type': 'application/json',
   },

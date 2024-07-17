@@ -6,7 +6,7 @@ export interface User {
     telefono: string;
     domicilio: string;
     fechaNac: Date | string;
-    avatarUrl?: string;
+    imagen?: string;
     password?: string;
   }
   

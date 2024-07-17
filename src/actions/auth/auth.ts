@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {gestEduApi} from '../../config/api/GestEduApi';
 import type {AuthResponse} from '../../infrastructure/interfaces/auth.responses';
-import { API_URL } from '@env';
+import { URL_API } from '@env';
 import { User } from '../../domain/entities/user';
 
 const returnUserToken = (response: AuthResponse) => {
@@ -13,11 +13,9 @@ const returnUserToken = (response: AuthResponse) => {
 
 
 export const authLogin = async (email: string, password: string) => {
-  //email = email.toLowerCase();
-  // console.log("API_URL:", API_URL);
 
   try {
-    const {data} = await gestEduApi.post('/login' /*axios.post(`${API_URL}/login`*/, {
+    const {data} = await gestEduApi.post('/login', {
       email,
       password,
     });

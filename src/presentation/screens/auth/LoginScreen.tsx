@@ -47,7 +47,7 @@ export const LoginScreen = ({navigation}: Props) => {
       } catch (error) {
         console.error('Error obteniendo el token de FCM:', error);
       }
-    };
+    }; 
 
     const sendTokenToServer = async (token: string) => {
       console.log('TOKEN:: ' + token);
@@ -75,7 +75,7 @@ export const LoginScreen = ({navigation}: Props) => {
       const notification = remoteMessage.notification;
       if (notification) {
         const {title, body} = notification;
-        Alert.alert(title!, body!);
+        Alert.alert(title!, body);
       }
     });
 

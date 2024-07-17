@@ -38,7 +38,7 @@ export const PendingSubjectsToGraduateScreen = () => {
     <SubjectsListScreen
       endpoint={endpoint}
       headerText="Asignaturas Pendientes para Graduación"
-      iconName="file-text-outline"
+      iconName="home-outline"
       onPress={handlePressItem}
     />
   );

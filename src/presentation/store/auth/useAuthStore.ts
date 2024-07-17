@@ -36,6 +36,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   register: async (user: User) => {
+    console.log(user);
+  
     const resp = await authRegister(user);
     if (!resp) {
       set({status: 'unauthenticated', token: undefined});

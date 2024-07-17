@@ -32,7 +32,7 @@ export const AvailableSubjectsForCourseScreen = () => {
 
   
   const endpoint = selectedCareerId
-    ? `/estudiantes/${selectedCareerId}/asignaturas-pendientes`
+    ? `/estudiantes/${selectedCareerId}/asignaturas-inscripcion`
     : '';
 
 

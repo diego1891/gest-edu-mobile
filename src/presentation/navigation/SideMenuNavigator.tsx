@@ -32,7 +32,7 @@ const initialDrawerItems: DrawerItemType[] = [
   },
   {label: 'Asignaturas', children: [ 
     { label: 'Inscribirse a Curso', screen: 'EnrolledCareersForCourse' },
-    { label: 'Mis Cursos Activos', screen: 'EnrolledCourses'}
+    { label: 'Mis Cursos', screen: 'EnrolledCourses'}
   ],
   },
 
