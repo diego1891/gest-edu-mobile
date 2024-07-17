@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Input, Layout, Text} from '@ui-kitten/components';
-import {Alert, Image, PermissionsAndroid, StyleSheet, View} from 'react-native';
+import {Alert, Image, KeyboardAvoidingView, PermissionsAndroid, Platform, StyleSheet, View} from 'react-native';
 import {MyIcon} from '../../components/ui/MyIcon';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../navigation/StackNavigator';
@@ -160,8 +160,10 @@ export const LoginScreen = ({navigation}: Props) => {
   };
 
   return (
-    <Layout style={styles.outerContainer}>
-      <View style={styles.innerContainer}>
+    <KeyboardAvoidingView
+      style={styles.outerContainer}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Layout style={styles.innerContainer}>
         <View style={styles.logoContainer}>
           <Image
             source={require('../../../assets/logo/gestEdu.png')}
@@ -249,16 +251,15 @@ export const LoginScreen = ({navigation}: Props) => {
             </Text>
           </>
         )}
-      </View>
-      <CustomAlert
-        isVisible={isAlertVisible}
-        onClose={() => setIsAlertVisible(false) }
-        title={alertData.title}
-        message={alertData.message}
-        iconName={alertData.icon}
-
-      />
-    </Layout>
+        <CustomAlert
+          isVisible={isAlertVisible}
+          onClose={() => setIsAlertVisible(false)}
+          title={alertData.title}
+          message={alertData.message}
+          iconName={alertData.icon}
+        />
+      </Layout>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -270,8 +271,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   innerContainer: {
-    width: 400,
-    height: '75%',
+    width: '90%',
+    maxWidth: 400,
+    height: '85%',
     padding: 15,
     backgroundColor: '#fff',
     borderRadius: 10,

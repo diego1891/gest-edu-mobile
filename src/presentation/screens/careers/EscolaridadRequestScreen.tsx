@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, Alert } from 'react-native';
+import { View, Alert, StyleSheet } from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import { gestEduApi } from '../../../config/api/GestEduApi';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/StackNavigator';
 import { EscolaridadResponse } from '../../../domain/entities/EscolaridadResponse';
-import { Spinner } from '@ui-kitten/components';
+import { Layout, Button, Spinner, Text } from '@ui-kitten/components';
 
 type EscolaridadRequestScreenRouteProp = RouteProp<RootStackParams, 'Escolaridad'>;
 
@@ -98,14 +98,52 @@ const EscolaridadRequestScreen = () => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      {loading ? (
-        <Spinner size="large" />
-      ) : (
-        <Button title="Generar PDF" onPress={generatePDF} />
-      )}
-    </View>
+    <Layout style={styles.outerContainer}>
+      <View style={styles.innerContainer}>
+        <Text category="h1" style={styles.title}>
+          Informe de Escolaridad
+        </Text>
+        {loading ? (
+          <Spinner size="large" />
+        ) : (
+          <Button style={styles.button} onPress={generatePDF}>
+            Generar PDF
+          </Button>
+        )}
+      </View>
+    </Layout>
   );
 };
+
+const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    backgroundColor: '#802C2C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  innerContainer: {
+    width: '90%',
+    maxWidth: 400,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#000',
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#802C2C',
+    borderColor: '#802C2C',
+  },
+});
 
 export default EscolaridadRequestScreen;

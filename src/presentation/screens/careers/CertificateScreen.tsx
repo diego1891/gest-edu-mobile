@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {View, Button, Alert} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Alert, StyleSheet } from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import {gestEduApi} from '../../../config/api/GestEduApi';
-import {RootStackParams} from '../../navigation/StackNavigator';
-import {RouteProp, useRoute} from '@react-navigation/native';
-import {CertificateResponse} from '../../../domain/entities/CertificateResponse';
+import { gestEduApi } from '../../../config/api/GestEduApi';
+import { RootStackParams } from '../../navigation/StackNavigator';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { CertificateResponse } from '../../../domain/entities/CertificateResponse';
+import { Layout, Button, Text } from '@ui-kitten/components';
 
 type CertificateScreenRouteProp = RouteProp<RootStackParams, 'Certificate'>;
 
@@ -42,7 +43,7 @@ const CertificateScreen = () => {
       return;
     }
 
-    const {estudiante, carrera, fecha, codigoValidacion} = data;
+    const { estudiante, carrera, fecha, codigoValidacion } = data;
 
     const htmlContent = `
       <html>
@@ -96,10 +97,48 @@ const CertificateScreen = () => {
   };
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Button title="Generar PDF" onPress={generatePDF} />
-    </View>
+    <Layout style={styles.outerContainer}>
+      <View style={styles.innerContainer}>
+        <Text category="h1" style={styles.title}>
+          Certificado de Estudiante
+        </Text>
+        <Button style={styles.button} onPress={generatePDF}>
+          Generar Certificado
+        </Button>
+      </View>
+    </Layout>
   );
 };
+
+const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    backgroundColor: '#802C2C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  innerContainer: {
+    width: '90%',
+    maxWidth: 400,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#000',
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#802C2C',
+    borderColor: '#802C2C',
+  },
+});
 
 export default CertificateScreen;

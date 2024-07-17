@@ -61,6 +61,10 @@ const StudentProcedureListScreen = () => {
       try {
         const response = await gestEduApi.get('/tramites/tramites-estudiante');
         setTramites(response.data);
+        tramites.forEach((tramite) => {
+          console.log(tramite);
+        });
+        
       } catch (error) {
         console.error('Error fetching tramites:', error);
         setAlertData({
@@ -86,7 +90,7 @@ const StudentProcedureListScreen = () => {
         </View>
         <View style={styles.row}>
           <Icon name="book-outline" style={styles.icon} fill="#802C2C" />
-          <Text style={styles.value}>Carrera: {item.nombreCarrera}</Text>
+          <Text style={styles.value}>Carrera: {item.carreraNombre}</Text>
         </View>
         <View style={styles.row}>
           <Icon name="calendar-outline" style={styles.icon} fill="#802C2C" />

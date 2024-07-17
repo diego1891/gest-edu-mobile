@@ -5,5 +5,5 @@ export interface Tramite {
     fechaActualizacion: string;
     fechaCreacion: string;
     tipo: string;
-    nombreCarrera: string;
+    carreraNombre: string;
 }
