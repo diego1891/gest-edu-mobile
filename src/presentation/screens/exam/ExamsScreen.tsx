@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#802C2C',
-    padding: 16,
+    padding: 10,
   },
   header: {
     alignItems: 'center',
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   },
   examItem: {
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 25,
     borderRadius: 15,
     marginBottom: 20,
     shadowColor: '#000',
